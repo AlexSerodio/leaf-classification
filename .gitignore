@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+__dataset_old/
+dataset-full/
+dataset-slim/

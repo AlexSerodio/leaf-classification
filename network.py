@@ -5,55 +5,37 @@ from tensorflow import keras
 
 import numpy as np
 import matplotlib.pyplot as plt
+from random import shuffle
 
-fashion_mnist = keras.datasets.fashion_mnist
-(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+import prepare_dataset as dataset
 
-class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+train_path = './dataset/train/'
+test_path = './dataset/test/'
 
-# print(train_images.shape)
-# print(len(train_labels))
-# print(train_labels)
-# print(test_images.shape)
-# print(len(test_labels))
+# load train data
+train_labels = dataset.load_image_labels(train_path)
+train_data = dataset.load_image_data(train_path)
 
-# plt.figure()
-# plt.imshow(train_images[0])
-# plt.colorbar()
-# plt.grid(False)
-# plt.show()
+# load test data
+test_labels = dataset.load_image_labels(test_path)
+test_data = dataset.load_image_data(test_path)
 
-# dataset normalization
-train_images = train_images / 255.0
-test_images = test_images / 255.0
+# suffle train data
+combined = list(zip(train_labels, train_data))
+shuffle(combined)
+train_labels, train_data = zip(*combined)
 
-# plt.figure(figsize=(10,10))
-# for i in range(25):
-#     plt.subplot(5,5,i+1)
-#     plt.xticks([])
-#     plt.yticks([])
-#     plt.grid(False)
-#     plt.imshow(train_images[i], cmap=plt.cm.binary)
-#     plt.xlabel(class_names[train_labels[i]])
-# plt.show()
+# suffle test data
+combined = list(zip(test_labels, test_data))
+shuffle(combined)
+test_labels, test_data = zip(*combined)
 
-# model layers creation
-model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dense(10, activation='softmax')
-])
+print(len(train_labels))
+print(len(train_data))
+print(train_data[0].shape)
 
-# model compilation
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+print('+------------------+')
 
-# training
-model.fit(train_images, train_labels, epochs=10)
-
-# evaluation
-test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
-print('\nTest accuracy:', test_acc)
-
+print(len(test_labels))
+print(len(test_data))
+print(test_data[0].shape)
