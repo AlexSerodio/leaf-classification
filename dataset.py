@@ -1,3 +1,5 @@
+# Autores: Alex Serodio Gonçalves e Luma Kühl
+
 import os
 import cv2
 import numpy as np
@@ -7,15 +9,26 @@ file_extension = '.jpg'
 width = 100
 height = 150
 
-def prepare_image_data(path, output):
+def resize(path, output):
     file_names = os.listdir(path)
     for file in file_names:
         image = cv2.imread(path + '/' + file)
-        # image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+        cv2.imwrite(output + file, image)
 
-        # (thresh, im_bw) = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+def resize_and_grayscale(path, output):
+    file_names = os.listdir(path)
+    for file in file_names:
+        image = cv2.imread(path + '/' + file)
+        image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+        cv2.imwrite(output + file, image)
 
+def resize_and_threshold(path, output):
+    file_names = os.listdir(path)
+    for file in file_names:
+        image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
+        image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+        (thresh, image) = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         cv2.imwrite(output + file, image)
 
 def load_image_labels(path):
@@ -28,9 +41,7 @@ def load_image_data(path):
     images = []
     file_names = os.listdir(path)
     for file in file_names:
-        # image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
         image = cv2.imread(path + '/' + file)
-        # images = np.append(images, image)
         images.append(image)
 
     return images
@@ -69,4 +80,4 @@ def format_name(name):
         name = name[:len(file_extension)]
     return int(name.split('-')[0])
 
-prepare_image_data('./dataset-slim', './dataset-colorful/')
+# resize_and_threshold('./dataset-colored', './dataset-threshold/')

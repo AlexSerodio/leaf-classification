@@ -1,39 +1,39 @@
+# Autores: Alex Serodio Gonçalves e Luma Kühl
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import tensorflow as tf
-from tensorflow import keras    # 1.9.0 -> 1.15.0
+from tensorflow import keras
 
 import numpy as np
 import matplotlib.pyplot as plt
 from random import shuffle
 
-import prepare_dataset as dataset
+import dataset
 
-root_path = './dataset-colorful/'
-train_path = root_path + 'train/'
-test_path = root_path + 'test/'
+root_path = './dataset-colored/'
 
-# load train data
-train_labels = dataset.load_image_labels(train_path)
-train_images = dataset.load_image_data(train_path)
+# carrega labels e imagens
+labels = dataset.load_image_labels(root_path)
+images = dataset.load_image_data(root_path)
 
-# load test data
-test_labels = dataset.load_image_labels(test_path)
-test_images = dataset.load_image_data(test_path)
-
-# suffle train data
-combined = list(zip(train_labels, train_images))
+# randomiza o dataset carregado
+combined = list(zip(labels, images))
 shuffle(combined)
-train_labels, train_images = zip(*combined)
-train_labels = np.array(train_labels)
-train_images = np.array(train_images)
+labels, images = zip(*combined)
+labels = np.array(labels)
+images = np.array(images)
 
-# suffle test data
-combined = list(zip(test_labels, test_images))
-shuffle(combined)
-test_labels, test_images = zip(*combined)
-test_labels = np.array(test_labels)
-test_images = np.array(test_images)
+# ponto de corte de 20% dos dados
+test_size = int(20 / 100 * len(labels))
+
+# corta 80% para treino
+train_labels = labels[test_size:len(labels)-1]
+train_images = images[test_size:len(labels)-1]
+
+# corta 20% para teste
+test_labels = labels[:test_size-1]
+test_images = images[:test_size-1]
 
 model = keras.Sequential([
     keras.layers.Conv2D(16, 5, padding='same', activation='relu', input_shape=(dataset.height, dataset.width, 3)),
@@ -43,18 +43,16 @@ model = keras.Sequential([
     keras.layers.Conv2D(64, 5, padding='same', activation='relu'),
     keras.layers.MaxPooling2D(),
     keras.layers.Flatten(),
-    # keras.layers.Dense(512, activation='relu'),
     keras.layers.Dense(10, activation='softmax')
 ])
 
-# model compilation
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-# training
-model.fit(train_images, train_labels, epochs=1)
+# treino com dados de treino
+model.fit(train_images, train_labels, epochs=10)
 
-# evaluation
+# validação com dados de teste
 test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
 print('\nTest accuracy:', test_acc)
