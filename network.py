@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import tensorflow as tf
-from tensorflow import keras
+from tensorflow import keras    # 1.9.0 -> 1.15.0
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,8 +9,9 @@ from random import shuffle
 
 import prepare_dataset as dataset
 
-train_path = './dataset/train/'
-test_path = './dataset/test/'
+root_path = './dataset-colorful/'
+train_path = root_path + 'train/'
+test_path = root_path + 'test/'
 
 # load train data
 train_labels = dataset.load_image_labels(train_path)
@@ -34,19 +35,15 @@ test_labels, test_images = zip(*combined)
 test_labels = np.array(test_labels)
 test_images = np.array(test_images)
 
-# print(train_images.shape)
-# print(test_images.shape)
-
-# train_images = train_images / 255.0
-# test_images = test_images / 255.0
-
-# print(train_images.shape)
-# print(test_images.shape)
-
-# model layers creation
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(dataset.height, dataset.width)),
-    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Conv2D(16, 5, padding='same', activation='relu', input_shape=(dataset.height, dataset.width, 3)),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Conv2D(32, 5, padding='same', activation='relu'),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Conv2D(64, 5, padding='same', activation='relu'),
+    keras.layers.MaxPooling2D(),
+    keras.layers.Flatten(),
+    # keras.layers.Dense(512, activation='relu'),
     keras.layers.Dense(10, activation='softmax')
 ])
 
@@ -56,7 +53,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # training
-model.fit(train_images, train_labels, epochs=10)
+model.fit(train_images, train_labels, epochs=1)
 
 # evaluation
 test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)

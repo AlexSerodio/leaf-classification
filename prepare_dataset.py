@@ -10,8 +10,12 @@ height = 150
 def prepare_image_data(path, output):
     file_names = os.listdir(path)
     for file in file_names:
-        image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
+        image = cv2.imread(path + '/' + file)
+        # image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+
+        # (thresh, im_bw) = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
         cv2.imwrite(output + file, image)
 
 def load_image_labels(path):
@@ -24,8 +28,8 @@ def load_image_data(path):
     images = []
     file_names = os.listdir(path)
     for file in file_names:
-        image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
-        # image = cv2.imread(path + '/' + file)
+        # image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
+        image = cv2.imread(path + '/' + file)
         # images = np.append(images, image)
         images.append(image)
 
@@ -60,8 +64,9 @@ def get_name(name):
     elif 3447 <= name <= 3510:
         return 9 # 'Canadian popular'
 
-
 def format_name(name):
     if name.endswith(file_extension):
         name = name[:len(file_extension)]
-    return int(name)
+    return int(name.split('-')[0])
+
+prepare_image_data('./dataset-slim', './dataset-colorful/')
