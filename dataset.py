@@ -19,14 +19,14 @@ def resize(path, output):
 def resize_and_grayscale(path, output):
     file_names = os.listdir(path)
     for file in file_names:
-        image = cv2.imread(path + '/' + file)
+        image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
         cv2.imwrite(output + file, image)
 
 def resize_and_threshold(path, output):
     file_names = os.listdir(path)
     for file in file_names:
-        image = cv2.imread(path + '/' + file, cv2.IMREAD_GRAYSCALE)
+        image = cv2.imread(path + '/' + file)
         image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
         (thresh, image) = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         cv2.imwrite(output + file, image)
@@ -80,4 +80,5 @@ def format_name(name):
         name = name[:len(file_extension)]
     return int(name.split('-')[0])
 
-# resize_and_threshold('./dataset-colored', './dataset-threshold/')
+# resize_and_grayscale('./sample-colored', './sample-grayscale/')
+# resize_and_threshold('./sample-colored', './sample-threshold/')

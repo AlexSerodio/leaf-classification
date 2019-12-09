@@ -11,7 +11,7 @@ from random import shuffle
 
 import dataset
 
-root_path = './dataset-colored/'
+root_path = './dataset-grayscale/'
 
 # carrega labels e imagens
 labels = dataset.load_image_labels(root_path)
